@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from ..safety.paths import BLOCKED_NAMES, BLOCKED_PARTS, resolve_project_path
+from ..safety.paths import BLOCKED_PARTS, is_sensitive_name, resolve_project_path
 
 
 def list_files(root: Path, limit: int = 120) -> list[str]:
     result = []
     for path in root.rglob("*"):
-        if not path.is_file() or BLOCKED_PARTS.intersection(path.relative_to(root).parts) or path.name in BLOCKED_NAMES:
+        if not path.is_file() or BLOCKED_PARTS.intersection(path.relative_to(root).parts) or is_sensitive_name(path.name):
             continue
         result.append(path.relative_to(root).as_posix())
         if len(result) >= min(max(limit, 1), 150):
@@ -19,6 +19,10 @@ def read_file(root: Path, relative: str) -> str:
     if not path.is_file():
         return "Error: file does not exist"
     try:
-        return path.read_text(encoding="utf-8")[:20000]
+        with path.open("r", encoding="utf-8") as stream:
+            content = stream.read(12001)
+        if len(content) > 12000:
+            return content[:12000] + "\n[File excerpt truncated at 12,000 characters]"
+        return content
     except UnicodeDecodeError:
         return "Error: file is not UTF-8 text"

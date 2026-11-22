@@ -4,13 +4,14 @@ ViveCopilot is a learning project for building a repository-aware coding assista
 
 ## Status
 
-Project structure is in place. The first milestone is a local command-line agent that can inspect a synthetic project, propose a change, show a diff, and run an explicitly approved test command.
+The first milestone is implemented as a local command-line agent. It can inspect and search a selected project, propose a change with a diff, and run an explicitly approved test command.
 
 ## Safety and privacy
 
 - Start with `demo/sample_project`, which contains synthetic code.
 - The configured provider receives the prompt and any file contents used as context. Use only code you are allowed to share with that provider.
 - Review diffs before accepting edits. Test runs execute code in the selected project.
+- The test runner recognizes Python `unittest`, Maven, and Gradle projects. For Java builds it prefers the repository's Maven or Gradle wrapper when present; otherwise the runner must be installed. It asks before executing project tests.
 - Never commit API keys. `.env.example` contains placeholders only.
 
 ## Setup
@@ -27,7 +28,7 @@ $env:VIVECOPILOT_MODEL = "gpt-4o-mini"
 python -m vivecopilot --project demo/sample_project
 ```
 
-Replace the endpoint and model with values from a provider you are authorized to use. Keep the key in your shell or a local ignored `.env` file; do not put real secrets in `.env.example`.
+Replace the endpoint and model with values from a provider you are authorized to use. The first version reads credentials from environment variables. Do not put real secrets in `.env.example` or commit them to Git.
 
 ## Example task
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ..safety.paths import BLOCKED_NAMES, BLOCKED_PARTS
+from ..safety.paths import BLOCKED_PARTS, is_sensitive_name
 
 
 def search_text(root: Path, query: str, max_hits: int = 40) -> str:
@@ -8,7 +8,12 @@ def search_text(root: Path, query: str, max_hits: int = 40) -> str:
         return "Error: search text cannot be empty"
     hits = []
     for path in root.rglob("*"):
-        if not path.is_file() or BLOCKED_PARTS.intersection(path.relative_to(root).parts) or path.name in BLOCKED_NAMES:
+        if not path.is_file() or BLOCKED_PARTS.intersection(path.relative_to(root).parts) or is_sensitive_name(path.name):
+            continue
+        try:
+            if path.stat().st_size > 2_000_000:
+                continue
+        except OSError:
             continue
         try:
             for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
