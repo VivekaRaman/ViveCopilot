@@ -12,6 +12,8 @@ The first milestone is implemented as a local command-line agent. It can inspect
 - The configured provider receives the prompt and any file contents used as context. Use only code you are allowed to share with that provider.
 - Review diffs before accepting edits. Test runs execute code in the selected project.
 - The test runner recognizes Python `unittest`, Maven, and Gradle projects. For Java builds it prefers the repository's Maven or Gradle wrapper when present; otherwise the runner must be installed. It asks before executing project tests.
+- Ask `review my changes` to inspect staged and unstaged Git diffs. It skips common secret-looking paths and does not run project code.
+- For edits, ViveCopilot prefers a focused unique-section patch to an existing file; full-file proposals are available for creating files. Every change requires your approval.
 - Never commit API keys. `.env.example` contains placeholders only.
 
 ## Setup
